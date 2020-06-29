@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const db = require("../model/helper");
 
-function getItems(req, res) {
+function getUsers(req, res) {
   db("SELECT * FROM users ORDER BY id ASC;")
     .then(results => {
       res.send(results.data);
@@ -11,7 +11,7 @@ function getItems(req, res) {
 }
 
 router.get("/", function(req, res, next) {
-  getItems(req, res);
+  getUsers(req, res);
 });
 
 router.get("/cereal", function(req, res, next) {
@@ -22,13 +22,13 @@ router.get("/cereal", function(req, res, next) {
     .catch(err => res.status(500).send(err));
 });
 
-router.put("/cereal/:cereal_id", (req, res) => {
-  db(`UPDATE cereal SET image ='${req.body.image}' WHERE id=${req.params.cereal_id};`)
+router.put("/:id", (req, res) => {
+  db(`UPDATE users SET photo ='${req.body.photo}' WHERE id=${req.params.id};`)
     .then(results => {
       if (results.error) {
         res.status(404).send({ error: results.error });
       } else {
-        db("SELECT * FROM cereal ORDER BY id ASC;")
+        db("SELECT * FROM users ORDER BY id ASC;")
           .then(results => {
             res.send(results.data);
           })
@@ -59,7 +59,7 @@ router.post("/", function(req, res) {
       if(result.error) {
         res.status(404).send({error: result.error});
       } else {
-        getItems(req, res)
+        getUsers(req, res)
       }
     })
     .catch(err => res.status(500).send(err));
@@ -78,5 +78,32 @@ router.get("/cereal/:cereal_id", function(req, res, next) {
       }
     })
     .catch(err => res.status(500).send(err));
+});
+router.get("/:ids", function(req, res, next) {
+
+  db(`SELECT * FROM users WHERE cereal_id IN (${req.params.ids});`)
+  .then(results => {
+    if (results.error) {
+      res.status(404).send(results.error);
+    } else {
+      res.send(results.data);
+    }
+  })
+  .catch(err => res.status(500).send(err));
+});
+router.delete("/:id", function(req, res) {
+  if (!Number.isInteger(parseInt(req.params.id))) {
+    res.status(400).send("Id is a number");
+  }
+  db(`DELETE FROM users WHERE id=${req.params.id}`)
+    .then(results => {
+      if (results.error) {
+        return res.status(404).send({ error: results.error });
+      } else {
+        getUsers(req, res);
+      }
+    })
+    .catch(err => res.status(500).send(err));
+  //your code here
 });
 module.exports = router;

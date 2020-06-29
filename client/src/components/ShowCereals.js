@@ -4,17 +4,51 @@ import {Link} from 'react-router-dom';
 class ShowCereals extends React.Component {
     constructor(props) {
       super(props);
+      this.state = {
+        userList: [],
+        checked: [false, false, false, false, false, false, false, false, false, false]
+      }
     }
     
    
     handleChange = (e) => {
-      const id = e.target.checked;
-      const idNumber = e.target.id
-      if (id) {
-        this.props.clickedCereals(idNumber)
-      } 
+      // console.log(e.target.checked);
+      // console.log(e.target.name-1);
+      let arr = [...this.state.checked];
+      arr[e.target.name-1] = e.target.checked;
+      this.setState({
+        checked: arr
+      })
     }
-   
+
+   clickedCereals = () => {
+    let idList = [];
+    console.log(this.state.checked);
+    for(let i = 0; i < this.state.checked.length; i++) {
+      console.log(this.state.checked[i]);
+      if(this.state.checked[i] === true) {
+        idList.push(i+1);
+      }  
+    } fetch(`/users/${idList}`)
+      .then(res => res.json())
+      .then(jsonData => {   
+        console.log(jsonData)    
+        this.setState({
+          userList: jsonData
+        });    
+        this.props.selectedUsers(this.state.userList);                                                                                                                                                    
+        if (!jsonData.ok) {
+          throw new Error(`HTTP error! status: ${jsonData.status}`);
+        } else {
+          return jsonData;
+        }
+      }) 
+      .catch(e => {
+        console.log('There has been a problem with your fetch operation: ' + e.message);
+      });
+   }
+
+
     render() {
       return (
           <div>
@@ -22,15 +56,15 @@ class ShowCereals extends React.Component {
               {this.props.cereals.map((cereal, index) => {
                 return(
                     <div key={index}>
-                      <input type="checkbox" onClick={(e) => this.handleChange(e)} id={cereal.id} name={cereal.type}/>
+                      <input type="checkbox" onClick={(e) => this.handleChange(e)} id={cereal.id} name={cereal.id}/>
                       <img src={cereal.image} alt={cereal.id} />
                     </div>
                 ) 
               })}
             </div>
-            <div>
-              {/* <button onClick={() => {this.handleSubmit()}}>button</button> */}
-              <Link to="/users">Connect...</Link>
+            <div className="cereal_link">
+              <button onClick={() => this.clickedCereals()}>Submit</button>
+              <Link to="/users" style={{color: 'pink', textDecoration: "none"}}>Connect Now</Link>
             </div>
           </div>
       );

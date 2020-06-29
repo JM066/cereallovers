@@ -9,7 +9,7 @@ class Home extends React.Component {
         city: "",
         profile: "",
         dob: "",
-        cereal_id: "1" 
+        cereal_id: ""
       }
     }
     
@@ -35,23 +35,30 @@ class Home extends React.Component {
     addDob = (e) => {
       const newDob = e.target.value;
       this.setState({
-        cereal_id: newDob
+        dob: newDob
       })
     }
     addCereals = (e) => {
       const newCereals = e.target.value;
+      console.log(newCereals)
       this.setState({
-        dob: newCereals
+        cereal_id: newCereals
       })
     }
     handleSubmit = (e) => {
       e.preventDefault();
-      const data = this.state
-      this.props.newUsers(data)
+      const newUser = this.state;
+      this.props.updateUsers({
+        name: this.state.name,
+        city: this.state.city,
+        profile: this.state.profile,
+        dob: this.state.dob,
+        cereal_id: this.state.cereal_id 
+      });
     }
     render() {
       return (
-          <div>
+          <div clasName="form-container"> 
             <form>
               <p>What is your name?</p>
               <input type="text" onChange={(e)=> this.addName(e)}></input>
@@ -74,9 +81,11 @@ class Home extends React.Component {
                 <option value="9">Cheerios</option>
                 <option value="10">Trix</option>
               </select>
-              <button onClick={(e) => {this.handleSubmit(e)}}>Submit</button>
+              <button className="submit" onClick={(e) => {this.handleSubmit(e)}}>Submit</button>
             </form>
-            <Link to="/cereals">Ready?</Link>
+            <div className="linkTag">
+              <Link to="/cereals" style={{color: 'pink', textDecoration: "none"}}>Ready?</Link>
+            </div>
           </div>
       );
     }

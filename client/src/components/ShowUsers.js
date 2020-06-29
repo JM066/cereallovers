@@ -43,8 +43,8 @@ renderUserImage = () => {
           <div className="user-image-container">
             {this.renderUserImage()}
           </div>
-          <div>
-            <Link to="/cereals">Meet other Cheerios?</Link>
+          <div className="linkTag">
+            <Link to="/cereals" style={{color: 'pink', textDecoration: "none"}}>Meet other Cheerios?</Link>
           </div>
         </div>
     )

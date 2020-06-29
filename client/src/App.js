@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, Link, NavLink} from 'react-router-dom'
 import './App.css';
 import ShowUsers from './components/ShowUsers';
 import ShowCereals from './components/ShowCereals';
@@ -17,7 +17,7 @@ class App extends React.Component {
       city: "",
       profile: "",
       dob: "",
-      cereal_id: "1" 
+      cereal_id: "" 
     }
   }
   componentDidMount() {
@@ -34,45 +34,62 @@ class App extends React.Component {
         });
       });
   };
-
-  addUsers = (data) => {
-    fetch('/users', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: data.name,
-        cereal_id: data.cereal_id,
-        city: data.city,
-        photo: data.photo,
-        dob: data.dob,
-      })
-    }) 
-  }
-
-
- clickedCereals = (id) => {
-   fetch(`users/cereal/${id}`)
-    .then(res => res.json())
-    .then(jsonData => {
-      this.setState({
-        userList: [...this.state.userList, jsonData]
-      })
+  updateUsers = (newUser) => {
+    this.setState({
+      name: newUser.name,
+      city: newUser.city,
+      profile: newUser.profile,
+      dob: newUser.dob,
+      cereal_id: newUser.cereal_id
     })
   }
+  addUsers = () => {
+    fetch('/users', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: this.state.name,
+          cereal_id: this.state.cereal_id,
+          city: this.state.city,
+          photo: this.state.profile,
+          dob: this.state.dob
+        }) 
+      })                                                                                                                                                                                                       
+    .then(response => {   
+        // console.log(response)                                                                                                                                                            
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      } else {
+        return response;
+      }
+    })
+    .catch(e => {
+      console.log('There has been a problem with your fetch operation: ' + e.message);
+    });
+}
+selectedUsers = (newList) => {
+  this.setState({
+    userList: [newList]
+  })
+}
+
 
   render() {
     return (
       <div className="main">
         <Router>
-          <Link to="/home">Cereal Connection</Link>
+          <div className="linkTag">
+            {this.addUsers()}
+            <Link to="/home" className="nav_home" style={{color: 'pink', textDecoration: "none"}}>Cereal Connection</Link>
+          </div>
           <Switch>
             <Route path="/home">
-              <Home newUsers={(data) => this.addUsers(data)} />
+              <Home updateUsers={(newUser) => this.updateUsers(newUser)} />
             </Route>
             <Route path="/cereals">
-              <ShowCereals cereals={this.state.cerealsList} clickedCereals={id => this.clickedCereals(id)}/>
+              <ShowCereals cereals={this.state.cerealsList} selectedUsers={(newList) => this.selectedUsers(newList)}/>
             </Route>
             <Route path="/users">
               <ShowUsers userData={this.state.userList}/>
