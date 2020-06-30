@@ -37,13 +37,15 @@ html{
   background-color: #ffbcbc;
 
 }
-/* .user-image-container {
-  padding: 10px;
-  background-color: white;
-  border-radius: 10px;
+.big-img-icon {
   width: 700px;
-  margin: 0 auto;
-} */
+  height: 400px;
+  padding-right: 20px;
+}
+
+.profile-container {
+  align-items: center;
+}
 .user-image-container {
   display: flex;
   flex-wrap: wrap;
