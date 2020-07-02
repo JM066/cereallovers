@@ -19,25 +19,26 @@ con.connect(function(err) {
   console.log("Connected!");
 
  let sql =
-    "DROP TABLE if exists users; CREATE TABLE users(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, cereal_id INT, city VARCHAR(40), photo TEXT, dob TEXT, gender_id INT, PRIMARY KEY (id)), FOREIGN KEY (cereal_id, gender_id);";
-  con.query(sql, function(err, result) {
+  "DROP TABLE if exists gender; CREATE TABLE gender(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, PRIMARY KEY (id));";
+con.query(sql, function(err, result) {
+  if (err) throw err;
+  console.log("Table creation `gender` was successful!");
+});
+
+  sql =
+  "DROP TABLE if exists cereal; CREATE TABLE cereal(id INT NOT NULL AUTO_INCREMENT, type VARCHAR(40) NOT NULL, image TEXT, PRIMARY KEY (id));";
+con.query(sql, function(err, result) {
+  if (err) throw err;
+  console.log("Table creation `cereal` was successful!");
+
+});
+
+ sql =
+    "DROP TABLE if exists users; CREATE TABLE users(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, cereal_id INT, city VARCHAR(40), photo TEXT, dob TEXT, gender_id INT, PRIMARY KEY(id), FOREIGN KEY(cereal_id) REFERENCES cereal(id), FOREIGN KEY(gender_id) REFERENCES gender(id));";
+  
+    con.query(sql, function(err, result) {
     if (err) throw err;
     console.log("Table creation `users` was successful!");
-  });
-    
-  sql =
-    "DROP TABLE if exists cereal; CREATE TABLE cereal(id INT NOT NULL AUTO_INCREMENT, type VARCHAR(40) NOT NULL, image TEXT, PRIMARY KEY (id));";
-  con.query(sql, function(err, result) {
-    if (err) throw err;
-    console.log("Table creation `cereal` was successful!");
-
-  });
-
-  sql =
-    "DROP TABLE if exists gender; CREATE TABLE gender(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(40) NOT NULL, PRIMARY KEY (id));";
-  con.query(sql, function(err, result) {
-    if (err) throw err;
-    console.log("Table creation `gender` was successful!");
   });
 
   sql =
